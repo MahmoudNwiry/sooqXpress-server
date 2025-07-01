@@ -1,14 +1,6 @@
-const Role = require("../models").Role
-const User = require("../models").User
-const Permission = require("../models").Permission
-
 const isOwner = async (req, res, next) => {
     try{
-        const user = await User.findOne({userId: req.userData.userId}).populate('role');
-        if(!user) {
-            return res.status(401).json({"message" : "المستخدم غير موجود"})
-        }
-        if(user.role.name !== 'owner') {
+        if(req.userData.role !== 'owner') {
             return res.status(403).json({"message" : "لا تمتلك صلاحيات"})
         }
         next();
@@ -17,25 +9,13 @@ const isOwner = async (req, res, next) => {
     }
 }
 
-const hasAddressPermision = async (req, res, next) => {  
+const hasPermision = async (req, res, next) => {  
     try {
-       const user = await User.findOne({userId: req.userData.userId})
-                                        .populate({
-                                            path: "role",
-                                            populate: {
-                                                path: "permissions"
-                                            }
-                                        })
-
-        if(!user) {
-            return res.status(404).json({"message" : "لم يتم العثور على المستخدم"});
-        }
-        
-        if(user.role.name === 'owner') {
+        if(req.userData.role === 'owner') {
             next();
         }
         else {
-            const permission = user.role.permissions.find(permission => permission.permissionName === "addresses");
+            const permission = req.userData.role.permissions.find(permission => permission.permissionName === req.permissionNeeded);
             if(!permission) {
                 return res.status(403).json({"message" : "لا تمتلك الصلاحيات"})
             }
@@ -47,39 +27,33 @@ const hasAddressPermision = async (req, res, next) => {
     }
 }
 
-const hasShopPermision = async (req, res, next) => {  
-    try {
-       const user = await User.findOne({userId: req.userData.userId})
-                                        .populate({
-                                            path: "role",
-                                            populate: {
-                                                path: "permissions"
-                                            }
-                                        })
-
-        if(!user) {
-            return res.status(404).json({"message" : "لم يتم العثور على المستخدم"});
-        }
-        
-        if(user.role.name === 'owner') {
-            next();
-        }
-        else {
-            const permission = user.role.permissions.find(permission => permission.permissionName === "shops");
-            if(!permission) {
-                return res.status(403).json({"message" : "لا تمتلك الصلاحيات"})
-            }
-            next();
-        }
-    }
-    catch (error) {
-        return res.status(403).json({error : error})
-    }
+const hasAddressPermission = async (req, res, next) => {
+    req.permissionNeeded = "addresses"
+    hasPermision(req, res, next);
 }
+
+
+const hasShopPermission = async (req, res, next) => {  
+    req.permissionNeeded = "shops"
+    hasPermision(req, res, next);
+}
+
+const hasShopCategoryPermision = async (req, res, next) => {
+    req.permissionNeeded = "shopCategory"
+    hasPermision(req, res, next);
+}
+
+const hasSubscriptionPermission = async (req, res, next) => {
+    req.permissionNeeded = "subscriptions"
+    hasPermision(req, res, next);
+}
+
 
 
 module.exports = {
-    hasAddressPermision,
-    hasShopPermision,
+    hasAddressPermission,
+    hasShopPermission,
+    hasShopCategoryPermision,
+    hasSubscriptionPermission,
     isOwner
 }

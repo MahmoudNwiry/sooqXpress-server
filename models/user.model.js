@@ -31,10 +31,6 @@ const userSchema = mongoose.Schema({
     avatar: {
         type: String
     },
-    feeds: [{
-        type: mongoose.Types.ObjectId,
-        ref : 'Category'
-    }],
     address : {
         type : [addressSchema],
         validate: {

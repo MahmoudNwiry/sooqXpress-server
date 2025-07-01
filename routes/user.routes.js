@@ -8,15 +8,20 @@ const {
     updateAddress, 
     getAddressById, 
     deleteAddress, 
-    getShippingAddress
+    getShippingAddress,
+    getAllShopCategory
 } = require("../controllers/user.controller");
 
 
-router.post('/address', verifyToken, addUserAddress)
+const { addressValidation, updateAddressValidation } = require("../middlewares/validation.middleware");
+
+
+router.post('/address', [verifyToken, addressValidation], addUserAddress)
 router.get('/address', verifyToken, getAllAddresses)
 router.get('/address/:addressId', verifyToken, getAddressById)
-router.put('/address/:addressId', verifyToken, updateAddress)
+router.put('/address/:addressId', [verifyToken, updateAddressValidation], updateAddress)
 router.delete('/address/:addressId', verifyToken, deleteAddress)
 router.get('/shippingAddresses', verifyToken, getShippingAddress)
+router.get('/shopCategory', verifyToken, getAllShopCategory)
 
 module.exports = router

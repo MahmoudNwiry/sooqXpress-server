@@ -1,4 +1,4 @@
-const { User, Address } = require("../models");
+const { User, Address, ShopCategory } = require("../models");
 
 const addUserAddress = async (req, res) => {
     const {addressId, details, isDefault} = req.body
@@ -57,6 +57,7 @@ const updateAddress = async (req, res) => {
         if(!user) {
             return res.status(401).json({"message" : "لم يتم العثور على المستخدم"})
         }
+        
 
         const address = user.address.find(adrs => adrs._id.toString() === addressId);
 
@@ -143,11 +144,24 @@ const getShippingAddress = async (req, res) => {
         return res.status(412).json({error : error});
     }
 }
+
+
+const getAllShopCategory = async (req, res) => {
+    try {
+        const categories = await ShopCategory.find();
+        return res.status(200).json(categories);
+    } catch (error) {
+        return res.status(412).json({error : error});
+    }
+}
+
+
 module.exports = {
     addUserAddress,
     getAllAddresses,
     updateAddress,
     getAddressById,
     deleteAddress,
-    getShippingAddress
+    getShippingAddress,
+    getAllShopCategory
 }

@@ -8,7 +8,12 @@ const User = require('../models').User
 const Role = require('../models').Role
 const asyncHandler = require('express-async-handler')
 const { v4: uuidv4 } = require('uuid')
+const { getIO } = require('../socket')
+
 require("dotenv").config();
+
+const io = getIO();
+
 const register = async (req, res) => {
 
     //Destructuing the inputs from req.body 
@@ -91,7 +96,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
     const { phoneNumber, password } = req.body
-
+    
     try {
         const user = await User.findOne({ phoneNumber: phoneNumber }).populate("role")
         if (!user) {
@@ -109,6 +114,8 @@ const login = async (req, res) => {
                 success: false
             })
         }
+
+
 
         let jwtToken = jwt.sign(
             {
@@ -138,10 +145,14 @@ const login = async (req, res) => {
 
 }
 
+const shopLogin = async (req, res) => {
 
-const userProfile = async (req, res, next) => {
+}
 
 
+const userProfile = async (req, res) => {
+
+    
     try {
         //verifying if the user exist in the database
         const verifyUser = await User.findOne({ userId: req.userData.userId }).populate("role")
@@ -175,30 +186,8 @@ const userProfile = async (req, res, next) => {
 };
 
 
-const users = asyncHandler(async (req, res) => {
-
-    //Fetching all users from database
-    try {
-        const users = await User.find();
-        console.log(users)
-        return res.status(200).json({
-            data: users,
-            sucess: true,
-            message: "users list"
-        })
-    } catch (error) {
-        return res.status(401).json({
-            sucess: false,
-            message: error.message,
-        })
-    }
-
-})
-
-
 module.exports = {
     register,
     login,
     userProfile,
-    users
 }
