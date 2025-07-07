@@ -7,7 +7,7 @@ const http = require('http')
 require("dotenv").config();
 const { initSocket } = require('./socket');
 const server = http.createServer(app);
-const { getSignedUrl, getViewUrl } = require('./s3.js');
+const { getSignedUrl } = require('./s3.js');
 
 const port = process.env.PORT || 5000;
 
@@ -28,18 +28,15 @@ mongoose.connect(
 .then(() => console.log("Connection Successful"))
 .catch((err) => console.error("Connection Error:", err));
 
-const authRoute = require("./routes/auth.routes");
-const addressRoute = require("./routes/address.routes");
-const ownerRoute = require("./routes/owner.route");
-const adminRoute = require("./routes/admin.routes");
-const userRoute = require("./routes/user.routes");
-app.use("/api/auth", authRoute)
-app.use("/api", addressRoute)
-app.use('/api/owner', ownerRoute)
-app.use('/api/admin', adminRoute)
-app.use('/api/user', userRoute)
+const addressRoute = require("./routes/address.routes");  // Importing address routes
+
+app.use("/api/auth", require("./routes/auth.routes"))
+app.use("/api", addressRoute)                             // move address route to admin route
+app.use('/api/owner', require("./routes/owner.route"))
+app.use('/api/admin', require("./routes/admin.routes"))
+app.use('/api/shop', require('./routes/shop.routes'));
+app.use('/api/user', require("./routes/user.routes"))
 app.get('/api/s3-url', getSignedUrl);
-app.get('/api/s3/view-url', getViewUrl);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

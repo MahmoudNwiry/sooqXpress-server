@@ -6,9 +6,10 @@ const bcrypt = require('bcryptjs')
 //Imprtong the user model 
 const User = require('../models').User
 const Role = require('../models').Role
-const asyncHandler = require('express-async-handler')
+const Shop = require('../models').Shop
 const { v4: uuidv4 } = require('uuid')
 const { getIO } = require('../socket')
+const { getViewUrl } = require('../s3')
 
 require("dotenv").config();
 
@@ -146,7 +147,59 @@ const login = async (req, res) => {
 }
 
 const shopLogin = async (req, res) => {
+    const { phoneNumber, password } = req.body
 
+    try {
+        const shop = await Shop.findOne({ phoneNumber: phoneNumber }).populate("address.addressId")
+        if (!shop) {
+            return res.status(401).json({
+                message: "رقم الهاتف غير مسجل",
+                success: false
+            })
+        }
+        if (!shop.logo) {
+            shop.logo = "https://www.citypng.com/public/uploads/preview/shop-logo-icon-11553388566q1x4k0bq2a.png"
+        }
+        shop.logo = await getViewUrl(shop.logo);
+
+        const pass = await bcrypt.compare(password, shop.password)
+        if (!pass) {
+            return res.status(401).json({
+                message: "كلمة المرور غير صحيحة",
+                success: false
+            })
+        }
+        let jwtToken = jwt.sign(
+            {
+                shopId: shop.shopId
+            },
+            process.env.JWT_SECRET
+        )
+        return res.status(200).json({
+            accessToken: jwtToken,
+            shop: {
+                shopId: shop.shopId,
+                name: shop.name,
+                owner: {
+                    name: shop.ownerName,
+                    id: shop.ownerId
+                },
+                address: {
+                    governorate: shop.address.addressId.governorate,
+                    area: shop.address.addressId.area,
+                    details: shop.address.details,
+                },
+                phoneNumber: shop.phoneNumber,
+                logo: shop.logo,
+            }
+        })
+    }
+    catch (error) {
+        return res.status(401).json({
+            messgae: error.message,
+            success: false
+        })
+    }
 }
 
 
@@ -157,10 +210,10 @@ const userProfile = async (req, res) => {
         //verifying if the user exist in the database
         const verifyUser = await User.findOne({ userId: req.userData.userId }).populate("role")
         if (!verifyUser) {
-                return res.status(403).json({
-                    message: "user not found",
-                    success: false,
-                })
+            return res.status(403).json({
+                message: "user not found",
+                success: false,
+            })
         } else {
                 return res.status(200).json({
                     messgae: `user ${verifyUser.firstName} ${verifyUser.lastName} found`,
@@ -185,9 +238,56 @@ const userProfile = async (req, res) => {
     }
 };
 
+const shopProfile = async (req, res) => {
+    try {
+        const verifyShop = await Shop.findOne({ shopId: req.shopData.shopId }).populate("address.addressId");
+        if (!verifyShop) {
+            return res.status(403).json({
+                message: "shop not found",
+                success: false,
+            })
+        }
+        else {
+
+            if (!verifyShop.logo) {
+                verifyShop.logo = "https://www.citypng.com/public/uploads/preview/shop-logo-icon-11553388566q1x4k0bq2a.png"
+            }
+            verifyShop.logo = await getViewUrl(verifyShop.logo);
+
+
+            return res.status(200).json({
+                    messgae: `Shop ${verifyShop.name} found`,
+                    shop: {
+                        shopId: verifyShop.shopId,
+                        name: verifyShop.name,
+                        owner: {
+                            name: verifyShop.ownerName,
+                            id: verifyShop.ownerId
+                        },
+                        address: {
+                            governorate: verifyShop.address.addressId.governorate,
+                            area: verifyShop.address.addressId.area,
+                            details: verifyShop.address.details,
+                        },
+                        phoneNumber: verifyShop.phoneNumber,
+                        logo: verifyShop.logo,
+                    },
+                    success: true
+                })
+        }
+    }
+    catch (error) {
+        return res.status(401).json({
+            sucess: false,
+            message: error.message,
+        })
+    }
+}
 
 module.exports = {
     register,
     login,
+    shopLogin,
     userProfile,
+    shopProfile
 }

@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
 const Role = require("../models").Role
 const User = require("../models").User
+const Shop = require("../models").Shop
 const Permission = require("../models").Permission
 
 const verifyToken = async (req, res, next) => {
   try {
     const token = req.headers.authorization.replace("Bearer ", "");    
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
-    
+
     const user = await User.findOne({userId: decoded.userId})
                                         .populate({
                                             path: "role",
@@ -31,6 +31,29 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
+const verifyTokenShop = async (req, res, next) => {
+  try{
+    const token = req.headers.authorization.replace("Bearer ", "");  
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    const shop = await Shop.findOne({shopId: decoded.shopId});
+
+    if(!shop) {
+      return res.status(401).json({"message" : "لم يتم العثور على المتجر"});
+    }
+
+    req.shopData = {};
+    req.shopData.shopId = decoded.shopId;
+    next();
+  } catch (err) {
+    return res.status(500).json({
+      message: "فشل المصادقة يرجى اعادة تسجيل الدخول"
+    });
+  }
+  
+}
+
 module.exports = {
-  verifyToken
+  verifyToken,
+  verifyTokenShop
 }
