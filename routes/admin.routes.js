@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 
 const { verifyToken } = require("../middlewares/auth.middleware");
-const { hasShopPermision, hasShopCategoryPermision, hasShopPermission } = require("../middlewares/permisions.middleware");
-const { createShop, createShopCategory, getShopsCategory, getShopCategoryById, updateShopCategory, deleteShopCategory } = require("../controllers/admin.controller");
+const { hasShopCategoryPermision, hasShopPermission } = require("../middlewares/permisions.middleware");
+const { createShop, createShopCategory, getShopsCategory, getShopCategoryById, updateShopCategory, deleteShopCategory, getAllShops, getShopById } = require("../controllers/admin.controller");
 const { shopCategoryValidation, shopVaidation } = require("../middlewares/validation.middleware");
 
 
 router.post('/shop', [verifyToken, hasShopPermission, shopVaidation], createShop) // check
-
+router.get('/shop', [verifyToken, hasShopPermission], getAllShops) // check
+router.get('/shop/:shopId', [verifyToken, hasShopPermission], getShopById) // check
 
 router.get('/shop-category', [verifyToken], getShopsCategory) // check
 router.get('/shop-category/:shcid', [verifyToken], getShopCategoryById) // check

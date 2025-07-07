@@ -13,7 +13,7 @@ const getSignedUrl = async (req, res) => {
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
     Key: fileName,
-    Expires: 60,
+    Expires: 300,
     ContentType: fileType,
   };
 
@@ -25,17 +25,20 @@ const getSignedUrl = async (req, res) => {
   }
 };
 
-const getViewUrl = async (req, res) => {
-  const { fileName } = req.query;
+const getViewUrl = async (image) => {
+
+  if (!image) {
+    return;
+  }
 
   const params = {
     Bucket: process.env.S3_BUCKET_NAME,
-    Key: fileName,
-    Expires: 6000, // صالح لمدة دقيقة
+    Key: image,
+    Expires: 300, // صالح لمدة 5 دقائق
   };
 
   const url = await s3.getSignedUrlPromise('getObject', params);
-  res.json({ url });
+  return url;
 };
 
 module.exports = {

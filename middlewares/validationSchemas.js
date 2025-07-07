@@ -156,11 +156,11 @@ const ShopSchema = Joi.object({
         'any.only': 'نوع المتجر يجب أن يكون "متجر الكتروني" أو "متجر إلكتروني" فقط',
         'any.required': 'نوع المتجر مطلوب'
     }),
-    logo: Joi.string().uri().optional().messages({
+    logo: Joi.string().required().messages({
         'string.base': 'شعار المتجر يجب أن يكون رابطًا',
         'string.uri': 'شعار المتجر يجب أن يكون رابطًا صالحًا'
     }),
-    description: Joi.string().min(5).max(255).optional().messages({
+    description: Joi.string().min(5).max(255).required().messages({
         'string.base': 'وصف المتجر يجب أن يكون نصًا',
         'string.empty': 'وصف المتجر لا يمكن أن يكون فارغًا',
         'string.min': 'وصف المتجر يجب أن يحتوي على 5 أحرف على الأقل',

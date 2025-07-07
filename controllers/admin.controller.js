@@ -3,6 +3,7 @@ const Shop = require('../models').Shop
 const ShopCategory = require('../models').ShopCategory
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcryptjs')
+const { getViewUrl } = require('../s3')
 
 const addAddress = async (req, res) => {
     
@@ -37,7 +38,7 @@ const addAddress = async (req, res) => {
 }
 
 const createShop = async (req, res) => {
-    const {name, phoneNumber, password, ownerName, ownerId, type, logo, description, address, categories, subscripe} = req.body;
+    const {name, phoneNumber, password, ownerName, ownerId, type, logo, description, address, category, subscripe} = req.body;
 
     try {
 
@@ -61,10 +62,10 @@ const createShop = async (req, res) => {
                             logo,
                             description,
                             address: {
-                                addressId: address._id,
+                                addressId: address.addressId,
                                 details: address.details
                             },
-                            category: categories,
+                            category: category,
                             subscripe : {
                                 type: subscripe.type,
                                 startDate: subscripe.startDate,
@@ -93,6 +94,52 @@ const createShop = async (req, res) => {
             success: false,
             message: error.message
         })
+    }
+}
+
+const getAllShops = async (req, res) => {
+    try {
+        const shops = await Shop.find({}).populate('category').populate('address.addressId').populate('subscripe.type').select('-password -__v');
+
+        if (!shops || shops.length === 0) {
+            return res.status(404).json({ message: "لا توجد متاجر" });
+        }
+
+        for (const shop of shops) {
+            if (shop.logo) {
+                shop.logo = await getViewUrl(shop.logo);
+            }
+        }
+
+        return res.status(200).json(shops);
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const getShopById = async (req, res) => {
+    const { shopId } = req.params;
+    try {
+        const shop = await Shop.find({ shopId: shopId })
+            .populate('category')
+            .populate('address.addressId')
+            .populate('subscripe.type')
+            .select('-password -__v');
+        if (!shop || shop.length === 0) {
+            return res.status(404).json({ message: "لم يتم العثور على المتجر"});
+        }
+        if (shop[0].logo) {
+            shop[0].logo = await getViewUrl(shop[0].logo);
+        }
+        return res.status(200).json(shop[0]);
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
     }
 }
 
@@ -220,6 +267,8 @@ const deleteShopCategory = async (req, res) => {
 module.exports = {
     addAddress,
     createShop,
+    getAllShops,
+    getShopById,
     updateShop,
     deleteShop,
     getShopsCategory,
