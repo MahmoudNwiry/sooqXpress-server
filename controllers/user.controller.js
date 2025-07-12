@@ -1,4 +1,9 @@
-const { User, Address, ShopCategory } = require("../models");
+const { getViewUrl } = require("../s3");
+
+const User = require("../models").User;
+const Address = require("../models").Address;
+const ShopCategory = require("../models").ShopCategory;
+const Shop = require("../models").Shop;
 
 const addUserAddress = async (req, res) => {
     const {addressId, details, isDefault} = req.body
@@ -138,7 +143,7 @@ const deleteAddress = async (req, res) => {
 
 const getShippingAddress = async (req, res) => {
     try {
-        const addresses = await Address.find();
+        const addresses = await Address.find({});
         return res.status(200).json(addresses)
     } catch (error) {
         return res.status(412).json({error : error});
@@ -155,6 +160,26 @@ const getAllShopCategory = async (req, res) => {
     }
 }
 
+const getAllShops = async (req, res) => {
+    try {
+        const shops = await Shop.find().populate('category').select('name category logo shopId');
+        if (!shops || shops.length === 0) {
+            return res.status(404).json({message: "لا توجد متاجر متاحة"});
+        }
+        
+        // get image
+        for (const shop of shops) {
+            if (shop.logo) {
+                shop.logo = await getViewUrl(shop.logo);
+            }
+        }
+
+        return res.status(200).json(shops);
+    } catch (error) {
+        return res.status(412).json({error : error});
+    }
+}
+
 
 module.exports = {
     addUserAddress,
@@ -163,5 +188,6 @@ module.exports = {
     getAddressById,
     deleteAddress,
     getShippingAddress,
-    getAllShopCategory
+    getAllShopCategory,
+    getAllShops
 }

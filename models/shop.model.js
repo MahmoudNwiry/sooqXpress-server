@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const ShopSchema = mongoose.Schema({
+const ShopSchema = new mongoose.Schema({
     shopId:{
         type: String,
     },

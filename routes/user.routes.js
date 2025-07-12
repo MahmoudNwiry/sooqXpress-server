@@ -9,7 +9,8 @@ const {
     getAddressById, 
     deleteAddress, 
     getShippingAddress,
-    getAllShopCategory
+    getAllShopCategory,
+    getAllShops
 } = require("../controllers/user.controller");
 
 
@@ -23,5 +24,7 @@ router.put('/address/:addressId', [verifyToken, updateAddressValidation], update
 router.delete('/address/:addressId', verifyToken, deleteAddress)
 router.get('/shippingAddresses', verifyToken, getShippingAddress)
 router.get('/shopCategory', verifyToken, getAllShopCategory)
+// router.get('/shopCategory/:categoryId', verifyToken, getAllShopCategory); // Assuming you want to get a specific category by ID
+router.get('/shops', getAllShops);
 
 module.exports = router

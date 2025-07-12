@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const SubscriptionPlanSchema = mongoose.Schema({
+const SubscriptionPlanSchema = new mongoose.Schema({
     name: {
         type: String
     },

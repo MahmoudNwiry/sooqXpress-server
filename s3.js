@@ -41,7 +41,27 @@ const getViewUrl = async (image) => {
   return url;
 };
 
+const deleteImage = async (image) => {
+  if (!image) {
+    return;
+  }
+
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: image,
+  };
+
+  try {
+    await s3.deleteObject(params).promise();
+    res.json({ message: 'تم حذف الصورة بنجاح' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'فشل في حذف الصورة' });
+  }
+};
+
 module.exports = {
     getSignedUrl,
-    getViewUrl
+    getViewUrl,
+    deleteImage
 }

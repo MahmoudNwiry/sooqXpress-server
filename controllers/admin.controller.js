@@ -38,7 +38,7 @@ const addAddress = async (req, res) => {
 }
 
 const createShop = async (req, res) => {
-    const {name, phoneNumber, password, ownerName, ownerId, type, logo, description, address, category, subscripe} = req.body;
+    const {name, phoneNumber, password, ownerName, ownerId, type, description, address, category, subscripe} = req.body;
 
     try {
 
@@ -59,7 +59,7 @@ const createShop = async (req, res) => {
                             ownerName,
                             ownerId,
                             type,
-                            logo,
+                            logo: 'public/placeholder/logo.png',
                             description,
                             address: {
                                 addressId: address.addressId,

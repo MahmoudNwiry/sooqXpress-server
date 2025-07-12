@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const addressSchema = mongoose.Schema({
+const addressSchema = new mongoose.Schema({
      addressId: {
         type : mongoose.Types.ObjectId,
         ref : 'Address'
@@ -15,7 +15,7 @@ const addressSchema = mongoose.Schema({
 }, {_id : true})
 
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     userId:{
         type:String
     }, 

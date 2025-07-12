@@ -1,4 +1,4 @@
-const { SignUpSchema, AddressSchema, updateAddressSchema, MainAddressSchema, ShopCategorySchema, RoleSchema, UpdateSubscriptionPlanSchema, SubscriptionPlanSchema, ShopSchema } = require("./validationSchemas");
+const { SignUpSchema, AddressSchema, updateAddressSchema, MainAddressSchema, ShopCategorySchema, RoleSchema, UpdateSubscriptionPlanSchema, SubscriptionPlanSchema, ShopSchema, shopUpdateLogoSchema, shopUpdateProfileSchema } = require("./validationSchemas");
 
 
 const signUpValidation = (req, res, next) => {
@@ -24,7 +24,7 @@ const addressValidation = (req, res, next) => {
 }
 
 const updateAddressValidation = (req, res, next) => {
-    const { error } = UpdateSubscriptionPlanSchema.validate(req.body, { abortEarly: false });
+    const { error } = updateAddressSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
         const errorMessages = error.details.map(err => err.message);
@@ -100,6 +100,24 @@ const updateSubscriptionPlanValidation = (req, res, next) => {
     next();
 }
 
+const updateShopProfileValidation = (req, res, next) => {
+    const { error } = shopUpdateProfileSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+        const errorMessages = error.details.map(err => err.message);
+        return res.status(400).json({ errors: errorMessages });
+    }
+    next();
+}
+
+const updateShopProfileLogoValidation = (req, res, next) => {
+    const { error } = shopUpdateLogoSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+        const errorMessages = error.details.map(err => err.message);
+        return res.status(400).json({ errors: errorMessages });
+    }
+    next();
+}
+
 module.exports = {
     signUpValidation,
     addressValidation,
@@ -109,5 +127,7 @@ module.exports = {
     shopVaidation,
     roleValidation,
     subscriptionPlanValidation,
-    updateSubscriptionPlanValidation
+    updateSubscriptionPlanValidation,
+    updateShopProfileValidation,
+    updateShopProfileLogoValidation
 };

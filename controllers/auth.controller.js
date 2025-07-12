@@ -240,7 +240,7 @@ const userProfile = async (req, res) => {
 
 const shopProfile = async (req, res) => {
     try {
-        const verifyShop = await Shop.findOne({ shopId: req.shopData.shopId }).populate("address.addressId");
+        const verifyShop = await Shop.findOne({ shopId: req.shopData.shopId }).populate("address.addressId").populate("category.categoryId").populate("subscriptionPlan.subscriptionPlanId");
         if (!verifyShop) {
             return res.status(403).json({
                 message: "shop not found",
@@ -271,6 +271,9 @@ const shopProfile = async (req, res) => {
                         },
                         phoneNumber: verifyShop.phoneNumber,
                         logo: verifyShop.logo,
+                        category: verifyShop.category,
+                        description: verifyShop.description || "",
+                        subscriptionPlan: verifyShop.subscriptionPlan || null,
                     },
                     success: true
                 })

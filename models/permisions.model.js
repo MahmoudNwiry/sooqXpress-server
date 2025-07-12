@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const PermissionSchema = mongoose.Schema({
+const PermissionSchema = new mongoose.Schema({
     permissionName: {
         type: String,
         required: true,

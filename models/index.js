@@ -13,5 +13,7 @@ db.Address = require('./address.model')
 db.Shop = require('./shop.model')
 db.SubscriptionPlan = require('./subscriptionPlan.model')
 db.ShopCategory = require('./shopCategory.model')
+db.Product = require('./product.model')
+db.Offer = require('./offer.model')
 
 module.exports = db

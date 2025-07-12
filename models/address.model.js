@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const addressSchma = mongoose.Schema({
+const addressSchma = new mongoose.Schema({
     country : {
         type: String,
         require : true,
