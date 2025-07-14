@@ -1,6 +1,8 @@
 const Address = require('../models').Address
 const Shop = require('../models').Shop
 const ShopCategory = require('../models').ShopCategory
+const Category = require('../models').Category
+const SubCategory = require('../models').SubCategory
 const { v4: uuidv4 } = require('uuid')
 const bcrypt = require('bcryptjs')
 const { getViewUrl } = require('../s3')
@@ -264,6 +266,228 @@ const deleteShopCategory = async (req, res) => {
     }
 }
 
+
+const createProductCategory = async (req, res) => {
+    const { name, image } = req.body;
+    try {
+        const existName = await Category.findOne({name: name});
+        if(existName) {
+            return req.status(400).json({"message" : "هذا الاسم موجود مسبقا"})
+        }
+
+        const category = await Category({name, image});
+
+        category.save()
+                .then(() => {
+                    return res.status(201).json({
+                        success: true,
+                        category : category
+                    })
+                })
+                .catch((error) => {
+                    return res.status(412).send({
+                        success: false,
+                        message: error.message
+                    })
+                })
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const getAllProductCategories = async (req, res) => {
+    try {
+        const categories = await Category.find({});
+
+        if (!categories || categories.length === 0) {
+            return res.status(404).json({ message: "لا توجد أقسام" });
+        }
+
+        return res.status(200).json(categories);
+    }
+    catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+
+const getProductCategoryById = async (req, res) => {
+    const { cid } = req.params;
+    try {
+        const category = await Category.findOne({_id : cid});
+        if(!category) {
+            return res.status(404).json({"message" : "لم يتم العثور على القسم"})
+        }
+
+        return res.status(200).json({category})
+
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+const updateProductCategory = async (req, res) => {
+    const { cid } = req.params;
+    const { name, image } = req.body;
+    try {
+        const category = await Category.findOneAndUpdate(
+            { _id: cid },
+            { name: name, image: image },
+            { new: true }
+        );
+
+        if (!category) {
+            return res.status(404).json({ message: "لم يتم العثور على القسم" });
+        }
+
+        return res.status(200).json({ category });
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const deleteProductCategory = async (req, res) => {
+    const { cid } = req.params;
+    try {
+        const subCategoryWithCategory = await SubCategory.findOne({ categoryId: cid });
+        if (subCategoryWithCategory) {
+            return res.status(400).json({ message: "لا يمكن حذف القسم لأنه مرتبط بفئة فرعية واحدة أو أكثر" });
+        }
+        const category = await Category.findOneAndDelete({ _id: cid });
+
+        if (!category) {
+            return res.status(404).json({ message: "لم يتم العثور على القسم" });
+        }
+
+        return res.status(200).json({ message: "تم حذف القسم بنجاح" });
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const createProductSubCategory = async (req, res) => {
+    const { name, image, mainCategory } = req.body;
+    try {
+        const existName = await SubCategory.findOne({name: name});
+        if(existName) {
+            return req.status(400).json({"message" : "هذا الاسم موجود مسبقا"})
+        }
+
+        const subcategory = await SubCategory({name, image, categoryId: mainCategory});
+
+        subcategory.save()
+                .then(() => {
+                    return res.status(201).json({
+                        success: true,
+                        subcategory : subcategory
+                    })
+                })
+                .catch((error) => {
+                    return res.status(412).send({
+                        success: false,
+                        message: error.message
+                    })
+                })
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const getAllProductSubCategories = async (req, res) => {
+    try {
+        const subcategories = await SubCategory.find({}).populate('categoryId', 'name image _id');
+
+        if (!subcategories || subcategories.length === 0) {
+            return res.status(404).json({ message: "لا توجد فئات فرعية" });
+        }
+
+        return res.status(200).json(subcategories);
+    }
+    catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const getProductSubCategoryById = async (req, res) => {
+    const { scid } = req.params;
+    try {
+        const subcategory = await SubCategory.findOne({_id : scid}).populate('categoryId', 'name image _id');
+        if(!subcategory) {
+            return res.status(404).json({"message" : "لم يتم العثور على الفئة الفرعية"})
+        }
+
+        return res.status(200).json({subcategory})
+
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+const updateProductSubCategory = async (req, res) => {
+    const { scid } = req.params;
+    const { name, image } = req.body;
+    try {
+        const subcategory = await SubCategory.findOneAndUpdate(
+            { _id: scid },
+            { name: name, image: image },
+            { new: true }
+        );
+
+        if (!subcategory) {
+            return res.status(404).json({ message: "لم يتم العثور على الفئة الفرعية" });
+        }
+
+        return res.status(200).json({ subcategory });
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+const deleteProductSubCategory = async (req, res) => {
+    const { scid } = req.params;
+    try {
+        const subcategory = await SubCategory.findOneAndDelete({ _id: scid });
+
+        if (!subcategory) {
+            return res.status(404).json({ message: "لم يتم العثور على الفئة الفرعية" });
+        }
+
+        return res.status(200).json({ message: "تم حذف الفئة الفرعية بنجاح" });
+    } catch (error) {
+        return res.status(412).send({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
 module.exports = {
     addAddress,
     createShop,
@@ -275,5 +499,15 @@ module.exports = {
     getShopCategoryById,
     createShopCategory,
     updateShopCategory,
-    deleteShopCategory
+    deleteShopCategory,
+    createProductCategory,
+    getAllProductCategories,
+    getProductCategoryById,
+    updateProductCategory,
+    deleteProductCategory,
+    createProductSubCategory,
+    getAllProductSubCategories,
+    getProductSubCategoryById,
+    updateProductSubCategory,
+    deleteProductSubCategory
 }

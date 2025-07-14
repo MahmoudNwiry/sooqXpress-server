@@ -48,6 +48,10 @@ const hasSubscriptionPermission = async (req, res, next) => {
     hasPermision(req, res, next);
 }
 
+const hasProductCategoryPermission = async (req, res, next) => {
+    req.permissionNeeded = "productCategory"
+    hasPermision(req, res, next);
+}
 
 
 module.exports = {
@@ -55,5 +59,6 @@ module.exports = {
     hasShopPermission,
     hasShopCategoryPermision,
     hasSubscriptionPermission,
+    hasProductCategoryPermission,
     isOwner
 }

@@ -15,5 +15,6 @@ db.SubscriptionPlan = require('./subscriptionPlan.model')
 db.ShopCategory = require('./shopCategory.model')
 db.Product = require('./product.model')
 db.Offer = require('./offer.model')
+db.SubCategory = require('./subCategory.model')
 
 module.exports = db

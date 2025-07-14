@@ -318,10 +318,84 @@ const shopUpdateLogoSchema = Joi.object({
         'string.base': 'موقع الشعار يجب أن يكون نصًا',
         'string.empty': 'موقع الشعار لا يمكن أن يكون فارغًا',
         'string.min': ' موقع الشعار يجب أن يحتوي على 5 أحرف على الأقل',
-        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا'
+        'string.max': ' موقع الشعار يجب ألا يتجاوز 255 حرفًا'
     })
-})
+});
 
+const categoryProductSchema = Joi.object({
+    name: Joi.string().min(5).max(255).required().messages({
+        'string.base': ' الاسم يجب أن يكون نصًا',
+        'string.empty': ' الاسم لا يمكن أن يكون فارغًا',
+        'string.min': '  الاسم يجب أن يحتوي على 5 أحرف على الأقل',
+        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا',
+        'any.required': ' الاسم مطلوب'
+    }),
+    image: Joi.string().min(5).required().messages({
+        'string.base': 'الصورة يجب أن تكون رابطًا',
+        'string.uri': 'الصورة يجب أن تكون رابطًا صالحًا',
+        'string.empty': 'الصورة لا يمكن أن تكون فارغة',
+        'string.min': 'الصورة يجب أن تحتوي على 5 أحرف على الأقل',
+        'any.required': 'الصورة مطلوبة'
+    }),
+});
+
+const updateProductCategorySchema = Joi.object({
+    name: Joi.string().min(5).max(255).optional().messages({
+        'string.base': ' الاسم يجب أن يكون نصًا',
+        'string.empty': ' الاسم لا يمكن أن يكون فارغًا',
+        'string.min': '  الاسم يجب أن يحتوي على 5 أحرف على الأقل',
+        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا'
+    }),
+    image: Joi.string().min(5).optional().messages({
+        'string.base': 'الصورة يجب أن تكون رابطًا',
+        'string.uri': 'الصورة يجب أن تكون رابطًا صالحًا',
+        'string.empty': 'الصورة لا يمكن أن تكون فارغة',
+        'string.min': 'الصورة يجب أن تحتوي على 5 أحرف على الأقل'
+    })
+});
+
+const subCategoryProductSchema = Joi.object({
+    name: Joi.string().min(5).max(255).required().messages({
+        'string.base': ' الاسم يجب أن يكون نصًا',
+        'string.empty': ' الاسم لا يمكن أن يكون فارغًا',
+        'string.min': '  الاسم يجب أن يحتوي على 5 أحرف على الأقل',
+        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا',
+        'any.required': ' الاسم مطلوب'
+    }),
+    image: Joi.string().min(5).required().messages({
+        'string.base': 'الصورة يجب أن تكون رابطًا',
+        'string.uri': 'الصورة يجب أن تكون رابطًا صالحًا',
+        'string.empty': 'الصورة لا يمكن أن تكون فارغة',
+        'string.min': 'الصورة يجب أن تحتوي على 5 أحرف على الأقل',
+        'any.required': 'الصورة مطلوبة'
+    }),
+    mainCategory: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
+        'string.base': 'معرف الفئة الرئيسية يجب أن يكون نصًا',
+        'string.empty': 'معرف الفئة الرئيسية لا يمكن أن يكون فارغًا',
+        'string.pattern.base': 'معرف الفئة الرئيسية يجب أن يكون معرفًا صالحًا',
+        'any.required': 'معرف الفئة الرئيسية مطلوب'
+    })
+});
+
+const updateProductSubCategorySchema = Joi.object({
+    name: Joi.string().min(5).max(255).optional().messages({
+        'string.base': ' الاسم يجب أن يكون نصًا',
+        'string.empty': ' الاسم لا يمكن أن يكون فارغًا',
+        'string.min': '  الاسم يجب أن يحتوي على 5 أحرف على الأقل',
+        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا'
+    }),
+    image: Joi.string().min(5).optional().messages({
+        'string.base': 'الصورة يجب أن تكون رابطًا',
+        'string.uri': 'الصورة يجب أن تكون رابطًا صالحًا',
+        'string.empty': 'الصورة لا يمكن أن تكون فارغة',
+        'string.min': 'الصورة يجب أن تحتوي على 5 أحرف على الأقل'
+    }),
+    mainCategory: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).optional().messages({
+        'string.base': 'معرف الفئة الرئيسية يجب أن يكون نصًا',
+        'string.empty': 'معرف الفئة الرئيسية لا يمكن أن يكون فارغًا',
+        'string.pattern.base': 'معرف الفئة الرئيسية يجب أن يكون معرفًا صالحًا'
+    })
+});
 
 module.exports = {
     SignUpSchema,
@@ -334,5 +408,9 @@ module.exports = {
     SubscriptionPlanSchema,
     UpdateSubscriptionPlanSchema,
     shopUpdateProfileSchema,
-    shopUpdateLogoSchema
+    shopUpdateLogoSchema,
+    categoryProductSchema,
+    updateProductCategorySchema,
+    subCategoryProductSchema,
+    updateProductSubCategorySchema,
 }
