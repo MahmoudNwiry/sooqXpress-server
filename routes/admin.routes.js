@@ -25,7 +25,8 @@ const {
     updateProductSubCategory,
     getAllProductSubCategories,
     getProductSubCategoryById,
-    deleteProductSubCategory
+    deleteProductSubCategory,
+    getProductSubCategoryByMainCategory
 } = require("../controllers/admin.controller");
 const { 
     shopCategoryValidation, 
@@ -55,6 +56,7 @@ router.get('/category/:cid', [verifyToken], getProductCategoryById); // check
 router.post('/category', [verifyToken, hasProductCategoryPermission, createProductCategoryValidation], createProductCategory); // check
 router.put('/category/:cid', [verifyToken, hasProductCategoryPermission, updateProductCategoryValidation], updateProductCategory); // check
 router.delete('/category/:cid', [verifyToken, hasProductCategoryPermission], deleteProductCategory); // check
+router.get('/category/:cid/sub-category', [verifyToken], getProductSubCategoryByMainCategory); // development placeholder
 router.get('/sub-category', [verifyToken], getAllProductSubCategories); // development placeholder
 router.get('/sub-category/:scid', [verifyToken], getProductSubCategoryById); // development placeholder
 router.post('/sub-category', [verifyToken, hasProductCategoryPermission, createProductSubCategoryValidation], createProductSubCategory); // development placeholder

@@ -85,7 +85,6 @@ const updateSubscriptionPlan = async (req, res) => {
     
     const {spid} = req.params
 
-    console.log(req.body);
     
     try {
         let plan = await SubscriptionPlan.findOne({_id : spid});
