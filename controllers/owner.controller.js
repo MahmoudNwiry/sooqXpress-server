@@ -57,14 +57,15 @@ const getSubscriptionPlanById = async (req, res) => {
 
 
 const createSubscriptionPlans = async (req, res) => {
-    const {name, price, duration, features} = req.body
+    const {name, price, duration, features, limits} = req.body
 
     try {
         const subscriptionPlan = await SubscriptionPlan({
             name: name,
             price: price,
             duration: duration,
-            features: features || []
+            features: features || [],
+            limits: limits || {products: 0, offers : 0}
         })
 
         subscriptionPlan.save()
@@ -97,6 +98,10 @@ const updateSubscriptionPlan = async (req, res) => {
         plan.price = req.body.price || plan.price
         plan.duration = req.body.duration || plan.duration
         plan.features = req.body.features || plan.features
+        plan.limits = {
+            products : req.body.limits?.products || plan.limits.products,
+            offers : req.body.limits?.offers || plan.limits.offers
+        }
         
         plan.save().then(() => {
             return res.status(200).json({"message" : "تم التعديل بنجاح", "response" : plan})

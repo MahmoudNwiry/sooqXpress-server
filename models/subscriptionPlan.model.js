@@ -13,6 +13,10 @@ const SubscriptionPlanSchema = new mongoose.Schema({
     features: {
         type: [String]
     },
+    limits : {
+        products: {type: Number},
+        offers: {type: Number}
+    }
 });
 
 const SubscriptionPlanModel = mongoose.model("SubscriptionPlan", SubscriptionPlanSchema);

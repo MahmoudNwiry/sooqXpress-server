@@ -118,11 +118,10 @@ const ShopCategorySchema = Joi.object({
 });
 
 const ShopSchema = Joi.object({
-    name: Joi.string().min(2).max(50).required().messages({
+    name: Joi.string().min(3).required().messages({
         'string.base': 'اسم المتجر يجب أن يكون نصًا',
         'string.empty': 'اسم المتجر لا يمكن أن يكون فارغًا',
         'string.min': 'اسم المتجر يجب أن يحتوي على حرفين على الأقل',
-        'string.max': 'اسم المتجر يجب ألا يتجاوز 50 حرفًا',
         'any.required': 'اسم المتجر مطلوب'
     }),
     phoneNumber: Joi.string().pattern(/^(059|056)\d{7}$/).required().messages({
@@ -131,14 +130,14 @@ const ShopSchema = Joi.object({
         'string.pattern.base': 'رقم الهاتف يجب أن يبدأ بـ 059 أو 056 ويتكون من 10 أرقام',
         'any.required': 'رقم الهاتف مطلوب'
     }),
-    password: Joi.string().min(8).max(50).required().messages({
+    password: Joi.string().min(8).max(30).required().messages({
         'string.base': 'كلمة المرور يجب أن تكون نصًا',
         'string.empty': 'كلمة المرور لا يمكن أن تكون فارغة',
         'string.min': 'كلمة المرور يجب أن تحتوي على 8 أحرف على الأقل',
         'string.max': 'كلمة المرور يجب ألا تتجاوز 50 حرفًا',
         'any.required': 'كلمة المرور مطلوبة'
     }),
-    ownerName: Joi.string().min(2).max(50).required().messages({
+    ownerName: Joi.string().min(2).max(100).required().messages({
         'string.base': 'اسم المالك يجب أن يكون نصًا',
         'string.empty': 'اسم المالك لا يمكن أن يكون فارغًا',
         'string.min': 'اسم المالك يجب أن يحتوي على حرفين على الأقل',
@@ -156,11 +155,11 @@ const ShopSchema = Joi.object({
         'any.only': 'نوع المتجر يجب أن يكون "متجر الكتروني" أو "متجر إلكتروني" فقط',
         'any.required': 'نوع المتجر مطلوب'
     }),
-    description: Joi.string().min(0).max(255).required().messages({
+    description: Joi.string().min(0).max(500).required().messages({
         'string.base': 'وصف المتجر يجب أن يكون نصًا',
         'string.empty': 'وصف المتجر لا يمكن أن يكون فارغًا',
         'string.min': 'وصف المتجر يجب أن يحتوي على 5 أحرف على الأقل',
-        'string.max': 'وصف المتجر يجب ألا يتجاوز 255 حرفًا'
+        'string.max': 'وصف المتجر يجب ألا يتجاوز 500 حرفًا'
     }),
     address: Joi.object({
         addressId: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({
@@ -274,7 +273,22 @@ const SubscriptionPlanSchema = Joi.object({
             'string.base': 'كل ميزة يجب أن تكون نصًا',
             'string.min': 'كل ميزة يجب أن تحتوي على حرفين على الأقل',
             'string.max': 'كل ميزة يجب ألا تتجاوز 255 حرفًا'
+        }),
+    limits: Joi.object({
+        products: Joi.number().min(0).required().messages({
+            'number.base': 'حد المنتجات يجب أن يكون رقمًا',
+            'number.min': 'حد المنتجات يجب أن يكون 0 أو أكثر',
+            'any.required': 'حد المنتجات مطلوب'
+        }),
+        offers: Joi.number().min(0).required().messages({
+            'number.base': 'حد العروض يجب أن يكون رقمًا',
+            'number.min': 'حد العروض يجب أن يكون 0 أو أكثر',
+            'any.required': 'حد العروض مطلوب'
         })
+    }).required().messages({
+        'object.base': 'الحدود يجب أن تكون كائنًا',
+        'any.required': 'الحدود مطلوبة'
+    })
 });
 
 const UpdateSubscriptionPlanSchema = Joi.object({
@@ -300,7 +314,19 @@ const UpdateSubscriptionPlanSchema = Joi.object({
             'string.base': 'كل ميزة يجب أن تكون نصًا',
             'string.min': 'كل ميزة يجب أن تحتوي على حرفين على الأقل',
             'string.max': 'كل ميزة يجب ألا تتجاوز 255 حرفًا'
+        }),
+    limits: Joi.object({
+        products: Joi.number().min(0).optional().messages({
+            'number.base': 'حد المنتجات يجب أن يكون رقمًا',
+            'number.min': 'حد المنتجات يجب أن يكون 0 أو أكثر'
+        }),
+        offers: Joi.number().min(0).optional().messages({
+            'number.base': 'حد العروض يجب أن يكون رقمًا',
+            'number.min': 'حد العروض يجب أن يكون 0 أو أكثر'
         })
+    }).optional().messages({
+        'object.base': 'الحدود يجب أن تكون كائنًا'
+    })
 });
         
 

@@ -10,14 +10,14 @@ const {
     getAllSubscriptionPlans, 
     updateSubscriptionPlan 
 } = require("../controllers/owner.controller");
-const { roleValidation, subscriptionPlanValidation, updateAddressValidation } = require("../middlewares/validation.middleware");
+const { roleValidation, subscriptionPlanValidation, updateSubscriptionPlanValidation } = require("../middlewares/validation.middleware");
 
 router.post('/roles', [verifyToken, isOwner, roleValidation], createRole); // check
 
 router.get('/subscription-plan', [verifyToken, isOwner], getAllSubscriptionPlans);  // check
 router.get('/subscription-plan/:spid', [verifyToken, isOwner], getSubscriptionPlanById); // check
 router.post('/subscription-plan', [verifyToken, isOwner, subscriptionPlanValidation], createSubscriptionPlans); // check
-router.put('/subscription-plan/:spid', [verifyToken, isOwner, updateAddressValidation], updateSubscriptionPlan); // check
+router.put('/subscription-plan/:spid', [verifyToken, isOwner, updateSubscriptionPlanValidation], updateSubscriptionPlan); // check
 // router.delete('/subscription-plan/:spid', [verifyToken, isOwner], deleteSubscriptionPlan); // check
 
 module.exports = router
