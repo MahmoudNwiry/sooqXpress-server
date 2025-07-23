@@ -301,14 +301,11 @@ const getAllProductCategories = async (req, res) => {
     try {
         const categories = await Category.find({});
 
-        if (!categories || categories.length === 0) {
-            return res.status(404).json({ message: "لا توجد أقسام" });
-        }
-        
-
-        for (const category of categories) {
-            if (category.image) {
-                category._doc.imageUrl = await getViewUrl(category.image);
+        if (categories || categories.length > 0) {
+            for (const category of categories) {
+                if (category.image) {
+                    category._doc.imageUrl = await getViewUrl(category.image);
+                }
             }
         }
 
@@ -425,16 +422,14 @@ const getAllProductSubCategories = async (req, res) => {
     try {
         const subcategories = await SubCategory.find({}).populate('categoryId', 'name image _id');
 
-        if (!subcategories || subcategories.length === 0) {
-            return res.status(404).json({ message: "لا توجد فئات فرعية" });
-        }
-
-        for (const subcategory of subcategories) {
-            if (subcategory.image) {
-                subcategory._doc.imageUrl = await getViewUrl(subcategory.image);
-            }
-            if (subcategory.categoryId && subcategory.categoryId.image) {
-                subcategory.categoryId._doc.imageUrl = await getViewUrl(subcategory.categoryId.image);
+        if (subcategories && subcategories.length > 0) {
+            for (const subcategory of subcategories) {
+                if (subcategory.image) {
+                    subcategory._doc.imageUrl = await getViewUrl(subcategory.image);
+                }
+                if (subcategory.categoryId && subcategory.categoryId.image) {
+                    subcategory.categoryId._doc.imageUrl = await getViewUrl(subcategory.categoryId.image);
+                }
             }
         }
 
@@ -479,16 +474,14 @@ const getProductSubCategoryByMainCategory = async (req, res) => {
     try {
         const subcategories = await SubCategory.find({categoryId: cid}).populate('categoryId', 'name image _id');
 
-        if (!subcategories || subcategories.length === 0) {
-            return res.status(404).json({ message: "لا توجد فئات فرعية" });
-        }
-
-        for (const subcategory of subcategories) {
-            if (subcategory.image) {
-                subcategory._doc.imageUrl = await getViewUrl(subcategory.image);
-            }
-            if (subcategory.categoryId && subcategory.categoryId.image) {
-                subcategory.categoryId._doc.imageUrl = await getViewUrl(subcategory.categoryId.image);
+        if (subcategories || subcategories.length > 0) {
+            for (const subcategory of subcategories) {
+                if (subcategory.image) {
+                    subcategory._doc.imageUrl = await getViewUrl(subcategory.image);
+                }
+                if (subcategory.categoryId && subcategory.categoryId.image) {
+                    subcategory.categoryId._doc.imageUrl = await getViewUrl(subcategory.categoryId.image);
+                }
             }
         }
 
@@ -528,10 +521,6 @@ const deleteProductSubCategory = async (req, res) => {
     const { scid } = req.params;
     try {
         const subcategory = await SubCategory.findOneAndDelete({ _id: scid });
-
-        if (!subcategory) {
-            return res.status(404).json({ message: "لم يتم العثور على الفئة الفرعية" });
-        }
 
         return res.status(200).json({ message: "تم حذف الفئة الفرعية بنجاح" });
     } catch (error) {
